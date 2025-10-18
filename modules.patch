@@ -1,0 +1,112 @@
+--- a/src/sxbar.c	
++++ b/src/sxbar.c	
+@@ -443,46 +443,70 @@
+ 	config.modules = malloc(config.max_modules * sizeof(Module));
+ 	config.module_count = 0;
+ 
+-	/* clock */
+-	config.modules[config.module_count++] = (Module){.name = strdup("clock"),
+-	                                                 .command = "date '+%H:%M:%S'",
+-	                                                 .enabled = True,
+-	                                                 .refresh_interval = 1,
+-	                                                 .last_update = 0,
+-	                                                 .cached_output = NULL};
+-	/* date */
+-	config.modules[config.module_count++] = (Module){.name = strdup("date"),
+-	                                                 .command = "date '+%Y-%m-%d'",
+-	                                                 .enabled = True,
+-	                                                 .refresh_interval = 60,
+-	                                                 .last_update = 0,
+-	                                                 .cached_output = NULL};
+-	/* battery */
+-	config.modules[config.module_count++] =
+-	    (Module){.name = strdup("battery"),
+-	             .command = "cat /sys/class/power_supply/BAT0/capacity 2>/dev/null | sed "
+-	                        "'s/$/%/' || echo 'N/A'",
+-	             .enabled = False,
+-	             .refresh_interval = 30,
+-	             .last_update = 0,
+-	             .cached_output = NULL};
+-	/* volume */
+-	config.modules[config.module_count++] =
+-	    (Module){.name = strdup("volume"),
+-	             .command = "amixer get Master | grep -o '[0-9]*%' | head -1 || echo 'N/A'",
+-	             .enabled = True,
+-	             .refresh_interval = 5,
+-	             .last_update = 0,
+-	             .cached_output = NULL};
+ 	/* cpu */
+-	config.modules[config.module_count++] =
+-	    (Module){.name = strdup("cpu"),
+-	             .command = "top -bn1 | grep 'Cpu(s)' | sed 's/.*, *\\([0-9.]*\\)%* id.*/\\1/' "
+-	                        "| awk '{print 100-$1\"%\"}'",
+-	             .enabled = True,
+-	             .refresh_interval = 3,
+-	             .last_update = 0,
+-	             .cached_output = NULL};
++        config.modules[config.module_count++] =
++            (Module){.name = strdup("cpu"),
++                     .command = "top -bn1 | grep 'Cpu(s)' | sed 's/.*, *\\([0-9.]*\\)%* id.*/\\1/' "
++                                "| awk '{print \"CPU \" 100-$1\"%\"}'",
++                     .enabled = True,
++                     .refresh_interval = 3,
++                     .last_update = 0,
++                     .cached_output = NULL};
++        /* RAM */
++        config.modules[config.module_count++] =
++            (Module){.name = strdup("memory"),
++                     .command = "free -h | awk '/^Mem:/ {print \"MEM \" $3\"/\"$2}'",
++                     .enabled = True,
++                     .refresh_interval = 5,
++                     .last_update = 0,
++                     .cached_output = NULL};
++        /* Disk Usage */
++        config.modules[config.module_count++] =
++            (Module){.name = strdup("disk"),
++                     .command = "df -h / | awk 'NR==2 {print \"DISK \" $5}'",
++                     .enabled = True,
++                     .refresh_interval = 60,
++                     .last_update = 0,
++                     .cached_output = NULL};
++        /* volume */
++        config.modules[config.module_count++] =
++            (Module){.name = strdup("volume"),
++                     .command = "amixer get Master | grep -o '[0-9]*%' | head -1 | awk '{print \"VOL \" $1}' || echo 'VOL MUTE'",
++                     .enabled = True,
++                     .refresh_interval = 5,
++                     .last_update = 0,
++                     .cached_output = NULL};
++        /* battery */
++        config.modules[config.module_count++] =
++            (Module){.name = strdup("battery"),
++                     .command = "cat /sys/class/power_supply/BAT0/capacity 2>/dev/null | sed "
++                                "'s/$/%/' || echo 'N/A'",
++                     .enabled = False,
++                     .refresh_interval = 30,
++                     .last_update = 0,
++                     .cached_output = NULL};
++        /* Network Traffic */
++        config.modules[config.module_count++] =
++        (Module){.name = strdup("network"),
++                    .command = "ping -c1 -W1 1.1.1.1 >/dev/null 2>&1 && echo \"|NET-OK|\" || echo \"---\"",
++                    .enabled = True,
++                    .refresh_interval = 15,
++                    .last_update = 0,
++                    .cached_output = NULL};
++        /* clock */
++        config.modules[config.module_count++] = (Module){.name = strdup("clock"),
++                                                         .command = "date '+%H:%M:%S'",
++                                                         .enabled = True,
++                                                         .refresh_interval = 1,
++                                                         .last_update = 0,
++                                                         .cached_output = NULL};
++        /* date */
++        config.modules[config.module_count++] = (Module){.name = strdup("date"),
++                                                         .command = "date '+%Y-%m-%d'",
++                                                         .enabled = True,
++                                                         .refresh_interval = 60,
++                                                         .last_update = 0,
++                                                         .cached_output = NULL};
+ }
+ 
+ unsigned long parse_col(const char *hex)
