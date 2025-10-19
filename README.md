@@ -4,6 +4,9 @@ A patch that adds custom modules to sxbar.
 
 **Note**: This is a community patch and not officially affiliated with the sxbar project.
 
+<img width="541" height="37" alt="20251019_200236" src="https://github.com/user-attachments/assets/4588aee6-04fd-47ab-afb0-3c50d9109962" />
+
+
 ## 📦 Requirements
 
 - [sxbar](https://github.com/uint23/sxbar) source code
